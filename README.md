@@ -24,11 +24,12 @@ Before you begin, ensure you have:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/xbot.git](https://github.com/thepKz/grok_xAI.git
+git clone https://github.com/yourusername/xbot.git
 cd xbot
 ```
 
 2. Create and activate a virtual environment (recommended):
+### Note: If you already installed Python, Skip this.
 ```bash
 # Windows
 python -m venv venv
