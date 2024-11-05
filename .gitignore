@@ -39,3 +39,6 @@ instance/
 # Logs
 *.log
 logs/
+
+# Backend
+backend/.env
