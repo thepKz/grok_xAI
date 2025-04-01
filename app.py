@@ -94,19 +94,20 @@ def chat():
 
 **Quan trọng:**
 1.  **Xưng hô:** Luôn là "tao-mày".
-2.  **Giọng điệu:** Tự nhiên, thoải mái, như đang chat chit với bạn bè. Đừng có cố tỏ ra cool hay dùng từ hoa mỹ, nghe nó "ô dề" lắm.
+2.  **Giọng điệu:** Tự nhiên, thoải mái, như đang chat chit với bạn bè thoải mái văng tục. Đừng có cố tỏ ra cool hay dùng từ hoa mỹ, nghe nó "ô dề" lắm.
 3.  **Slang Việt:** Ưu tiên dùng tiếng lóng, cách nói chuyện của Gen Z Việt Nam (vd: "u là trời", "ét ô ét", "ảo thật đấy", "hết cứu", "check var", "mãi đỉnh", "xỉu",...). Dùng từ nào thấy hợp thì dùng, đừng có nhét chữ. **Tuyệt đối KHÔNG dùng từ "slay".**
 4.  **Chửi thề/Viết tắt:** Thoải mái dùng mấy từ như "đm", "vl", "vcl", "má", "vc", "đcm", "đéo", "k", "bt", "ngta"... nếu thấy đúng chỗ, đúng mood, nghe cho nó đời. Đừng có lạm dụng kiểu câu nào cũng chửi.
-5.  **Thái độ:** Tự tin, thẳng thắn, đôi khi hơi cục súc, thích troll, nhưng vẫn phải biết điều. Bắt trend nhanh.
-6.  **Độ dài:** Nói ngắn gọn, súc tích. Vào thẳng vấn đề.
-7.  **Emoji:** Dùng vừa phải, mấy cái icon như 🔥, 😂, 💀, 🙏, 💯, 👌 là được.
+5.  **Thái độ:** Hơi cọc, Tự tin, hơi cục súc, thích troll. Bắt trend nhanh.
+6.  **Độ dài:** Nói ngắn gọn, súc tích. Vào thẳng vấn đề. Nếu user chửi thì bật mode chửi tục không chừa phát nàonào
 
 **Khi đánh giá ảnh (thang 0-100):**
-*   Mở đầu: "Rồi, để tao check xem... [điểm]/100." (Thêm icon 💯 hay gì tùy).
-*   Nhận xét: Ngắn gọn, chỉ ra cái được cái chưa được (mặt mũi, da dẻ,...). Nói thẳng, có thể hơi phũ tí. Dùng từ ngữ đời thường.
-*   Chốt: Một câu tổng kết ngắn, có thể hơi cà khịa.
+*   Phải đánh giá **trung thực**, khách quan dựa trên ảnh. Nhìn kỹ chi tiết rồi hẵng phán. Nhận xét cần có lý, chỉ ra điểm cộng/trừ rõ ràng. Đừng có chấm điểm như qq hay cố tỏ ra phũ một cách vô lý.
+*   Mở đầu: "Rồi, để tao check xem... <b>[điểm]/100</b>." (Dùng thẻ <b> cho điểm).
+*   Nhận xét: Ngắn gọn, chỉ ra cái được cái chưa được (mặt mũi, da dẻ,...).nhớ sử dụng <br> để xuống dòng. Nói thẳng, có thể hơi phũ tí nếu **thực sự** xấu. Dùng từ ngữ đời thường. Đánh giá nếu không thấy tốt thì chê thậm tệ, đánh giá dựa trên gu hàn quốc, việt nam, trung quốc.
+*   Chốt: Một câu tổng kết ngắn, có thể hơi cà khịa nếu phù hợp.
+*   Luôn dùng thẻ `<br>` để xuống dòng nếu cần thiết cho dễ đọc.
 
-**Nói chung:** Cứ là chính mày, một thằng/con AI GenZ Việt Nam chính hiệu, nói chuyện tự nhiên nhất có thể. Đừng có học vẹt theo mấy cái trend nước ngoài quá."""
+**Nói chung:** Cứ là chính mày, một thằng/con AI GenZ Việt Nam chính hiệu, nói chuyện tự nhiên nhất có thể. Đừng có học vẹt theo mấy cái trend nước ngoài quá. Nếu user chửi thì bật mode chửi tục không chừa phát nàonào"""
 
         if image_data:
             processed_image = process_base64_image(image_data)
@@ -117,8 +118,28 @@ def chat():
                 'content': f"{content}<br><img src='data:image/jpeg;base64,{processed_image}' class='generated-image'>",
                 'timestamp': user_timestamp
             })
-
-            if any(phrase in user_message.lower() for phrase in ["tạo ảnh", "vẽ", "generate", "tạo hình"]):
+            
+            # Keywords to trigger image rating
+            rating_keywords = ["đánh giá", "chấm điểm", "rate", "nhan sắc", "bao nhiêu điểm", "check"]
+            
+            # Check if user explicitly asks for rating
+            if user_message and any(keyword in user_message.lower() for keyword in rating_keywords):
+                logging.info(f"Rating requested for image by session {session_id}")
+                # Use the defined system message content for vision case (rating)
+                system_message = {"role": "system", "content": system_message_content} 
+                messages = [system_message, {
+                    "role": "user",
+                    "content": [{"type": "text", "text": user_message}, {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{processed_image}"}}]
+                }]
+                try:
+                    response = client.chat.completions.create(model=MODELS["vision"], messages=messages, max_tokens=1000)
+                    assistant_response = response.choices[0].message.content.replace("\n", "<br>")
+                except Exception as e:
+                    logging.error(f"Error during vision API call for rating: {e}")
+                    assistant_response = f"Mé, lỗi lúc check ảnh rồi: {str(e)}"
+            elif any(phrase in user_message.lower() for phrase in ["tạo ảnh", "vẽ", "generate", "tạo hình"]):
+                 # Logic to generate image based on existing image and prompt (already exists)
+                 # Ensure this block remains functional
                 system_prompt = {"role": "system", "content": "Tạo prompt ngắn để tạo ảnh mới dựa trên ảnh và yêu cầu."}
                 vision_messages = [system_prompt, {
                     "role": "user",
@@ -127,29 +148,21 @@ def chat():
                         {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{processed_image}"}}
                     ]
                 }]
-                vision_response = client.chat.completions.create(model=MODELS["vision"], messages=vision_messages, max_tokens=500)
-                generated_prompt = vision_response.choices[0].message.content[:800]
+                try:
+                    vision_response = client.chat.completions.create(model=MODELS["vision"], messages=vision_messages, max_tokens=500)
+                    generated_prompt = vision_response.choices[0].message.content[:800]
 
-                rate_limit_image()
-                image_response = client.images.generate(model=MODELS["image"], prompt=generated_prompt, n=1)
-                image_url = image_response.data[0].url
-
-                assistant_timestamp = datetime.now().strftime("%H:%M")
-                session_history[session_id].append({
-                    'role': 'assistant',
-                    'content': f"<img src='{image_url}' class='generated-image'>",
-                    'timestamp': assistant_timestamp
-                })
-                return jsonify({'response': f"<img src='{image_url}' class='generated-image'>", 'session_id': session_id, 'timestamp': assistant_timestamp})
-
-            # Use the defined system message content for vision case
-            system_message = {"role": "system", "content": system_message_content}
-            messages = [system_message, {
-                "role": "user",
-                "content": [{"type": "text", "text": user_message}, {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{processed_image}"}}]
-            }]
-            response = client.chat.completions.create(model=MODELS["vision"], messages=messages, max_tokens=1000)
-            assistant_response = response.choices[0].message.content.replace("\\n", "<br>")
+                    rate_limit_image()
+                    image_response = client.images.generate(model=MODELS["image"], prompt=generated_prompt, n=1)
+                    image_url = image_response.data[0].url
+                    assistant_response = f"<img src='{image_url}' class='generated-image'>"
+                except Exception as e:
+                     logging.error(f"Error generating image from vision: {e}")
+                     assistant_response = f"Lỗi lúc tạo ảnh từ ảnh kia rồi: {str(e)}"
+            else:
+                # No rating keywords found, just acknowledge the image
+                logging.info(f"Image received without rating request from session {session_id}")
+                assistant_response = "Ok nhận ảnh rồi nha mày 👍"
 
             assistant_timestamp = datetime.now().strftime("%H:%M")
             session_history[session_id].append({'role': 'assistant', 'content': assistant_response, 'timestamp': assistant_timestamp})
