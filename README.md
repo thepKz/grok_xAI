@@ -1,103 +1,68 @@
+# XBot GenZ 🔥
 
-# X Bot - AI ChatBot 🤖
+## Cảnh báo ⚠️
+> **Chú ý**: Ứng dụng này có chứa ngôn ngữ GenZ, có thể bao gồm từ ngữ thô tục, chửi thề và nội dung dành cho người trưởng thành. Nếu bạn dưới 18 tuổi hoặc không thoải mái với các nội dung này, vui lòng cân nhắc trước khi sử dụng.
 
-A GenZ-style AI chatbot specialized in psychological counseling, numerology, and relationship advice.
+## Giới thiệu
+XBot GenZ là chatbot tích hợp Grok API, sử dụng ngôn ngữ GenZ Việt Nam (tao-mày, slang, emoji), có khả năng:
+- Chat như một người bạn GenZ cá tính
+- Tạo ảnh từ mô tả của người dùng
+- Phân tích ảnh người dùng tải lên
+- Đánh giá nhan sắc theo thang điểm 100 và tiêu chuẩn GenZ
 
-![{FEFD8E4C-1FAC-4B87-990C-88D93F936F7E}](https://github.com/user-attachments/assets/63ef5d1f-bedb-4fef-87af-79c231cf3cd6)
+## Tính năng chính
+- **Chat GenZ**: Sử dụng ngôn ngữ GenZ Việt Nam, đầy slang và emoji
+- **Tạo ảnh**: Tạo ảnh từ mô tả hoặc tạo ảnh biến thể từ ảnh đã tải lên
+- **Phân tích ảnh**: Mô tả chi tiết nội dung ảnh người dùng tải lên
+- **Đánh giá nhan sắc**: Cho điểm và nhận xét nhan sắc theo tiêu chuẩn GenZ
+- **Giao diện thân thiện**: Hỗ trợ dark mode và responsive design
+- **Auto-scroll**: Tự động cuộn xuống tin nhắn mới
+- **Download ảnh**: Tải xuống các ảnh được tạo
 
-## Features ✨
+## Cài đặt
 
-- 🔮 **Numerology Analysis**: Get insights about your life path numbers and their meanings
-- 💝 **Relationship Advice**: Receive guidance on relationships and personal matters
-- 🌱 **Personal Development**: Get tips for self-improvement and growth
-- 💬 **GenZ Communication Style**: Engaging conversations with modern language and emojis
-- 🔄 **Chat History**: Persistent storage of conversations
-- 🎯 **Context-Aware**: Bot remembers previous messages for meaningful conversations
+### Yêu cầu
+- Python 3.8+
+- Grok API key (đăng ký tại [api.x.ai](https://api.x.ai))
 
-## Prerequisites 📋
-
-Before you begin, ensure you have:
-- Python 3.8 or higher installed
-- An X.AI API key (Get it from [X.AI Platform](https://x.ai))
-
-## Installation 🚀
-
-1. Clone the repository:
+### Các bước cài đặt
+1. Clone repository
 ```bash
-git clone https://github.com/yourusername/xbot.git
-cd xbot
+git clone https://github.com/yourusername/xbot-genz.git
+cd xbot-genz
 ```
 
-2. Create and activate a virtual environment (recommended):
-### Note: If you already installed Python, Skip this.
-```bash
-# Windows
-python -m venv venv
-venv\Scripts\activate
-
-# macOS/Linux
-python3 -m venv venv
-source venv/bin/activate
-```
-
-3. Install dependencies:
+2. Cài đặt thư viện
 ```bash
 pip install -r requirements.txt
 ```
 
-4. Create a `.env` file in the project root and add your X.AI API key:
-```env
-XAI_API_KEY=your-api-key-here
+3. Tạo file `.env` ở thư mục gốc và thêm API key của bạn
+```
+XAI_API_KEY=your_api_key_here
+SECRET_KEY=your_secret_key_here
 ```
 
-## Usage 💡
-
-1. Start the application:
+4. Chạy ứng dụng
 ```bash
 python app.py
 ```
 
-2. Open your browser and go to:
-```
-http://localhost:5000
-```
+5. Truy cập web app tại `http://localhost:5000`
 
-3. Start chatting with X Bot! Try these features:
-- Ask for numerology analysis by providing your birthdate
-- Seek relationship advice
-- Get personal development guidance
-- Clear chat history using the "Clear chat" button
+## Hướng dẫn sử dụng
+- **Chat**: Gõ tin nhắn vào ô chat và nhấn Enter hoặc nút Gửi
+- **Tải ảnh lên**: Nhấn nút hình ảnh trong khung chat rồi chọn ảnh
+- **Tạo ảnh**: Nhấn nút Magic trong header, nhập mô tả và nhấn nút Tạo ảnh
+- **Xem ảnh đầy đủ**: Nhấn vào ảnh để xem ở kích thước đầy đủ
+- **Tải ảnh xuống**: Nhấn nút Download trên ảnh đã tạo
+- **Đánh giá nhan sắc**: Tải ảnh lên và hỏi "đánh giá nhan sắc giúp tao"
+- **Tạo ảnh biến thể**: Tải ảnh lên và yêu cầu "tạo ảnh giống vậy nhưng..."
 
-## Example Prompts 🗣️
+## Lưu ý
+- API có giới hạn tạo 10 ảnh mỗi phiên chat
+- Chatbot có thể đôi khi toxic hoặc sử dụng ngôn ngữ thô tục
+- Không sử dụng cho mục đích tạo nội dung nhạy cảm hoặc vi phạm đạo đức
 
-- "Can you analyze my birthdate: 13/03/2003?"
-- "I need advice about my relationship"
-- "How can I improve my communication skills?"
-- "What does my life path number mean?"
-
-## Tech Stack 🛠️
-
-- Flask: Web framework
-- SQLite: Database for chat history
-- X.AI API: AI language model
-- HTML/CSS/JavaScript: Frontend interface
-
-## Contributing 🤝
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License 📄
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments 🙏
-
-- Thanks to X.AI for providing the AI capabilities
-- Special thanks to all contributors
-
-## Support 💪
-
-If you encounter any issues or have questions, please open an issue in the repository.
-
----
-Made with ❤️ by [MinThep]
+## Phát triển bởi
+[Your Name/Team] - Sử dụng Grok API từ xAI

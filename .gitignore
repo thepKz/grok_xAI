@@ -42,3 +42,4 @@ logs/
 
 # Backend
 backend/.env
+flask_session/
