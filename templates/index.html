@@ -398,6 +398,17 @@
         }
         
         @media (max-width: 768px) {
+            .container {
+                padding: 0;
+            }
+            
+            .chat-container {
+                height: 100vh;
+                margin: 0;
+                border-radius: 0;
+                width: 100%;
+            }
+
             .message {
                 max-width: 85%;
             }
@@ -580,8 +591,9 @@
         }
         
         body[data-theme="dark"] #auto-scroll-btn:hover {
-            background-color: var(--primary-color);
-            color: white;
+            background-color: var(--assistant-bg-color);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            transform: translateY(-2px);
         }
 
         /* Responsive */
@@ -1064,6 +1076,95 @@
         .remove-image:hover {
             background-color: rgba(0,0,0,0.8);
         }
+
+        /* GitHub Footer styles */
+        .github-footer {
+            padding: 10px 0;
+            text-align: center;
+            font-size: 0.9rem;
+            background: linear-gradient(135deg, rgba(255, 94, 58, 0.1), rgba(255, 42, 104, 0.1));
+            border-radius: 0 0 12px 12px;
+            margin-top: 5px;
+        }
+        
+        .github-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .github-link:hover {
+            color: var(--secondary-color);
+            background-color: rgba(255, 94, 58, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(255, 94, 58, 0.2);
+        }
+        
+        body[data-theme="dark"] .github-footer {
+            background: linear-gradient(135deg, rgba(255, 94, 58, 0.05), rgba(255, 42, 104, 0.05));
+        }
+        
+        body[data-theme="dark"] .github-link {
+            color: var(--primary-color);
+        }
+        
+        body[data-theme="dark"] .github-link:hover {
+            background-color: rgba(255, 94, 58, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0;
+            }
+            
+            .chat-container {
+                height: 100vh;
+                margin: 0;
+                border-radius: 0;
+            }
+
+            .message {
+                max-width: 85%;
+            }
+            
+            .chat-header {
+                padding: 8px 15px;
+                border-radius: 0;
+            }
+            
+            .chat-title {
+                font-size: 1.1rem;
+            }
+            
+            .github-footer {
+                border-radius: 0;
+                padding: 10px 0;
+                position: relative;
+                z-index: 10;
+            }
+            
+            .chat-input-container {
+                padding: 12px;
+            }
+            
+            .chat-input-area {
+                width: 100%;
+            }
+            
+            #user-input {
+                padding: 10px;
+            }
+            
+            .chat-button {
+                width: 36px;
+                height: 36px;
+            }
+        }
     </style>
 </head>
 <body data-theme="light">
@@ -1152,6 +1253,13 @@
                 </div>
                 
                 <input type="file" id="image-input" accept="image/*" style="display: none;">
+            </div>
+            
+            <!-- GitHub Footer -->
+            <div class="github-footer">
+                <a href="https://github.com/thepKz/grok_xAI" target="_blank" class="github-link">
+                    <i class="fab fa-github"></i> Github | Thích thì cho star nhé
+                </a>
             </div>
         </div>
     </div>

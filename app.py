@@ -49,6 +49,12 @@ def rate_limit_image():
         time.sleep(1/IMAGE_RATE_LIMIT - (current_time - last_image_request))
     last_image_request = time.time()
 
+# Hàm xử lý markdown đơn giản
+def format_markdown(text):
+    # Xử lý **text** thành <b>text</b>
+    text = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', text)
+    return text
+
 @app.route('/')
 def home():
     if 'chat_history' not in session:
@@ -102,9 +108,9 @@ def chat():
 
 **Khi đánh giá ảnh (thang 0-100):**
 *   Phải đánh giá **trung thực**, khách quan dựa trên ảnh. Nhìn kỹ chi tiết rồi hẵng phán. Nhận xét cần có lý, chỉ ra điểm cộng/trừ rõ ràng. Đừng có chấm điểm như qq hay cố tỏ ra phũ một cách vô lý.
-*   Mở đầu: "Rồi, để tao check xem... <b>[điểm]/100</b>." (Dùng thẻ <b> cho điểm).
-*   Nhận xét: Ngắn gọn, chỉ ra cái được cái chưa được (mặt mũi, da dẻ,...).nhớ sử dụng <br> để xuống dòng. Nói thẳng, có thể hơi phũ tí nếu **thực sự** xấu. Dùng từ ngữ đời thường. Đánh giá nếu không thấy tốt thì chê thậm tệ, đánh giá dựa trên gu hàn quốc, việt nam, trung quốc.
-*   Chốt: Một câu tổng kết ngắn, có thể hơi cà khịa nếu phù hợp.
+*   Mở đầu: " <b>[điểm]/100</b>." (Dùng thẻ <b> cho điểm).
+*   Nhận xét: Ngắn gọn, chỉ ra cái được cái chưa được (mặt mũi, da dẻ,...).nhớ sử dụng <br> để xuống dòng. Nói thẳng, có thể hơi phũ tí nếu **thực sự** xấu. Dùng từ ngữ đời thường. Đánh giá nếu không thấy tốt thì chê thậm tệ, đánh giá dựa trên gu hàn quốc, việt nam, trung quốc. Nếu xinh thì hãy tâng bốc.
+*   Chốt: Một câu tổng kết ngắn, có thể hơi cà khịa nếu phù hợp. 
 *   Luôn dùng thẻ `<br>` để xuống dòng nếu cần thiết cho dễ đọc.
 
 **Nói chung:** Cứ là chính mày, một thằng/con AI GenZ Việt Nam chính hiệu, nói chuyện tự nhiên nhất có thể. Đừng có học vẹt theo mấy cái trend nước ngoài quá. Nếu user chửi thì bật mode chửi tục không chừa phát nàonào"""
@@ -119,27 +125,11 @@ def chat():
                 'timestamp': user_timestamp
             })
             
-            # Keywords to trigger image rating
-            rating_keywords = ["đánh giá", "chấm điểm", "rate", "nhan sắc", "bao nhiêu điểm", "check"]
+            # No rating keywords found, use vision model to analyze and respond to the image
+            logging.info(f"Using vision model to analyze image and respond to query from session {session_id}")
             
-            # Check if user explicitly asks for rating
-            if user_message and any(keyword in user_message.lower() for keyword in rating_keywords):
-                logging.info(f"Rating requested for image by session {session_id}")
-                # Use the defined system message content for vision case (rating)
-                system_message = {"role": "system", "content": system_message_content} 
-                messages = [system_message, {
-                    "role": "user",
-                    "content": [{"type": "text", "text": user_message}, {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{processed_image}"}}]
-                }]
-                try:
-                    response = client.chat.completions.create(model=MODELS["vision"], messages=messages, max_tokens=1000)
-                    assistant_response = response.choices[0].message.content.replace("\n", "<br>")
-                except Exception as e:
-                    logging.error(f"Error during vision API call for rating: {e}")
-                    assistant_response = f"Mé, lỗi lúc check ảnh rồi: {str(e)}"
-            elif any(phrase in user_message.lower() for phrase in ["tạo ảnh", "vẽ", "generate", "tạo hình"]):
-                 # Logic to generate image based on existing image and prompt (already exists)
-                 # Ensure this block remains functional
+            # Kiểm tra nếu người dùng yêu cầu tạo ảnh mới từ ảnh đã tải lên
+            if user_message and any(phrase in user_message.lower() for phrase in ["tạo ảnh", "vẽ", "generate", "tạo hình"]):
                 system_prompt = {"role": "system", "content": "Tạo prompt ngắn để tạo ảnh mới dựa trên ảnh và yêu cầu."}
                 vision_messages = [system_prompt, {
                     "role": "user",
@@ -157,12 +147,37 @@ def chat():
                     image_url = image_response.data[0].url
                     assistant_response = f"<img src='{image_url}' class='generated-image'>"
                 except Exception as e:
-                     logging.error(f"Error generating image from vision: {e}")
-                     assistant_response = f"Lỗi lúc tạo ảnh từ ảnh kia rồi: {str(e)}"
+                    logging.error(f"Error generating image from vision: {e}")
+                    assistant_response = f"Lỗi lúc tạo ảnh từ ảnh kia rồi: {str(e)}"
             else:
-                # No rating keywords found, just acknowledge the image
-                logging.info(f"Image received without rating request from session {session_id}")
-                assistant_response = "Ok nhận ảnh rồi nha mày 👍"
+                # Trả lời câu hỏi người dùng dựa vào nội dung ảnh
+                system_message = {"role": "system", "content": system_message_content}
+                
+                # Kiểm tra xem người dùng có yêu cầu đánh giá ảnh không
+                is_rating_request = user_message and any(keyword in user_message.lower() for keyword in ["đánh giá ảnh", "chấm điểm ảnh", "rate ảnh", "check ảnh", "đánh giá nhan sắc", "đánh giá ảnh này", "đánh giá", "check"])
+                
+                # Điều chỉnh system message nếu không phải yêu cầu đánh giá
+                if not is_rating_request:
+                    adjusted_system_content = system_message_content.split("**Khi đánh giá ảnh (thang 0-100):**")[0]
+                    adjusted_system_content += "**Lưu ý:** Không đánh giá ảnh theo thang điểm trừ khi được yêu cầu rõ ràng. Phân tích ảnh bình thường theo nội dung tin nhắn."
+                    system_message = {"role": "system", "content": adjusted_system_content}
+                
+                # Construct message with both text and image
+                user_query = user_message if user_message else "Mô tả ảnh này đi"
+                messages = [system_message, {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": user_query},
+                        {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{processed_image}"}}
+                    ]
+                }]
+                
+                try:
+                    response = client.chat.completions.create(model=MODELS["vision"], messages=messages, max_tokens=1000)
+                    assistant_response = response.choices[0].message.content.replace("\n", "<br>")
+                except Exception as e:
+                    logging.error(f"Error during vision API call for image analysis: {e}")
+                    assistant_response = f"Mé, lỗi khi phân tích ảnh: {str(e)}"
 
             assistant_timestamp = datetime.now().strftime("%H:%M")
             session_history[session_id].append({'role': 'assistant', 'content': assistant_response, 'timestamp': assistant_timestamp})
@@ -190,8 +205,16 @@ def chat():
                 logging.error(f"Error generating image: {e}")
                 return jsonify({'error': f"Mé, tạo ảnh lỗi ròi: {str(e)}", 'session_id': session_id}), 500
 
+        # Đến đây là xử lý chat thông thường không liên quan đến ảnh
         user_timestamp = datetime.now().strftime("%H:%M")
         session_history[session_id].append({'role': 'user', 'content': user_message, 'timestamp': user_timestamp})
+        
+        # Kiểm tra xem người dùng có đang yêu cầu đánh giá ảnh mà không gửi ảnh không
+        if any(keyword in user_message.lower() for keyword in ["đánh giá ảnh", "chấm điểm ảnh", "rate ảnh", "check ảnh", "đánh giá nhan sắc", "đánh giá ảnh này", "đánh giá"]):
+            assistant_response = "Mày phải gửi ảnh lên thì tao mới đánh giá được chứ? Gửi ảnh đi rồi tao check cho."
+            assistant_timestamp = datetime.now().strftime("%H:%M")
+            session_history[session_id].append({'role': 'assistant', 'content': assistant_response, 'timestamp': assistant_timestamp})
+            return jsonify({'response': assistant_response, 'session_id': session_id, 'timestamp': assistant_timestamp})
         
         # Use the SAME defined system message content for text case
         messages = [{"role": "system", "content": system_message_content}] + \
