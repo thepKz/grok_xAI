@@ -16,8 +16,7 @@ XBot GenZ là chatbot tích hợp Grok API, sử dụng ngôn ngữ GenZ Việt 
 - **Phân tích ảnh**: Mô tả chi tiết nội dung ảnh người dùng tải lên
 - **Đánh giá nhan sắc**: Cho điểm và nhận xét nhan sắc theo tiêu chuẩn GenZ
 - **Giao diện thân thiện**: Hỗ trợ dark mode và responsive design
-- **Auto-scroll**: Tự động cuộn xuống tin nhắn mới
-- **Download ảnh**: Tải xuống các ảnh được tạo
+- **Chửi khách hàng**: Hỗ trợ chửi nhau mà bạn xài Chatgpt chưa bao giờ gặp
 
 ## Cài đặt
 
@@ -28,7 +27,7 @@ XBot GenZ là chatbot tích hợp Grok API, sử dụng ngôn ngữ GenZ Việt 
 ### Các bước cài đặt
 1. Clone repository
 ```bash
-git clone https://github.com/yourusername/xbot-genz.git
+[git clone https://github.com/yourusername/xbot-genz.git](https://github.com/thepKz/grok_xAI.git)
 cd xbot-genz
 ```
 
@@ -40,7 +39,6 @@ pip install -r requirements.txt
 3. Tạo file `.env` ở thư mục gốc và thêm API key của bạn
 ```
 XAI_API_KEY=your_api_key_here
-SECRET_KEY=your_secret_key_here
 ```
 
 4. Chạy ứng dụng
@@ -55,7 +53,6 @@ python app.py
 - **Tải ảnh lên**: Nhấn nút hình ảnh trong khung chat rồi chọn ảnh
 - **Tạo ảnh**: Nhấn nút Magic trong header, nhập mô tả và nhấn nút Tạo ảnh
 - **Xem ảnh đầy đủ**: Nhấn vào ảnh để xem ở kích thước đầy đủ
-- **Tải ảnh xuống**: Nhấn nút Download trên ảnh đã tạo
 - **Đánh giá nhan sắc**: Tải ảnh lên và hỏi "đánh giá nhan sắc giúp tao"
 - **Tạo ảnh biến thể**: Tải ảnh lên và yêu cầu "tạo ảnh giống vậy nhưng..."
 
